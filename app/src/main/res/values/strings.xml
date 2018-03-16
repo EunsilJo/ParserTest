@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ParserTest</string>
+    <string name="gson">Gson</string>
+    <string name="jackson">Jackson</string>
 </resources>

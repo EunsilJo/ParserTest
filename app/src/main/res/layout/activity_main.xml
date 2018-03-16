@@ -6,13 +6,101 @@
     android:layout_height="match_parent"
     tools:context="com.github.eunsiljo.parsertest.MainActivity">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:padding="@dimen/common_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/txtJava"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Java model object"/>
+
+        <LinearLayout
+            android:id="@+id/layoutJava"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin_small"
+            android:layout_below="@id/txtJava"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <include android:id="@+id/javaGson"
+                layout="@layout/content_layout" />
+            <include android:id="@+id/javaJackson"
+                layout="@layout/content_layout" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtKotlin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin"
+            android:layout_below="@id/layoutJava"
+            android:text="Kotlin model object"/>
+
+        <LinearLayout
+            android:id="@+id/layoutKotlin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin_small"
+            android:layout_below="@id/txtKotlin"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <include android:id="@+id/kotlinGson"
+                layout="@layout/content_layout" />
+            <include android:id="@+id/kotlinJackson"
+                layout="@layout/content_layout" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtBig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin"
+            android:layout_below="@id/layoutKotlin"
+            android:text="Big json file (with Kotlin)"/>
+
+        <LinearLayout
+            android:id="@+id/layoutBig"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin_small"
+            android:layout_below="@id/txtBig"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <include android:id="@+id/bigGson"
+                layout="@layout/content_layout" />
+            <include android:id="@+id/bigJackson"
+                layout="@layout/content_layout" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin"
+            android:layout_below="@id/layoutBig"
+            android:text="Small json file (with Kotlin)"/>
+
+        <LinearLayout
+            android:id="@+id/layoutSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/common_margin_small"
+            android:layout_below="@id/txtSmall"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <include android:id="@+id/smallGson"
+                layout="@layout/content_layout" />
+            <include android:id="@+id/smallJackson"
+                layout="@layout/content_layout" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
