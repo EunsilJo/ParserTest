@@ -20,12 +20,23 @@ import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
 
-    private val bigFileName: String = "sample_big.json"
-    private val smallFileName: String = "sample_small.json"
+    private val bigFileName: String = "big.json"
+    private val smallFileName: String = "small.json"
+
+    private var gson: Gson = Gson()
+    private var jackson: ObjectMapper = ObjectMapper()
+    private var jacksonWithKotlin = ObjectMapper().registerModule(KotlinModule())
+
+    private var bigJson: String? = null
+    private var smallJson: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        bigJson = getStringFromResource(MainActivity::class.java, bigFileName)
+        smallJson = getStringFromResource(MainActivity::class.java, smallFileName)
+
         initLayout()
         initObservable()
     }
@@ -42,7 +53,6 @@ class MainActivity : AppCompatActivity() {
         //small
         smallGson.button.text = getString(R.string.gson)
         smallJackson.button.text = getString(R.string.jackson)
-
     }
 
     private fun initObservable(){
@@ -50,90 +60,84 @@ class MainActivity : AppCompatActivity() {
         createButtonClickObservable(javaGson.button)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { showProgress() }
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithGson(MainActivity::class.java, JSearchImageResult::class.java,
-                            bigFileName)
-                    startMillis
+                    fromJsonWithGson(bigJson, JSearchImageResult::class.java)
+                    System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { startMillis ->
+                .subscribe { duringTime ->
                     hideProgress()
-                    javaGson.text.text = (System.currentTimeMillis() - startMillis).toString()
+                    javaGson.text.text = duringTime.toString()
                 }
         createButtonClickObservable(javaJackson.button)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { showProgress() }
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithJackson(MainActivity::class.java, JSearchImageResult::class.java,
-                            bigFileName)
-                    startMillis
+                    fromJsonWithJackson(bigJson, JSearchImageResult::class.java)
+                    System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { startMillis ->
+                .subscribe { duringTime ->
                     hideProgress()
-                    javaJackson.text.text = (System.currentTimeMillis() - startMillis).toString()
+                    javaJackson.text.text = duringTime.toString()
                 }
 
         //kotlin
         createButtonClickObservable(kotlinGson.button)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { showProgress() }
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithGson(MainActivity::class.java, KSearchImageResult::class.java,
-                            bigFileName)
-                    startMillis
+                    fromJsonWithGson(bigJson, KSearchImageResult::class.java)
+                    System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { startMillis ->
+                .subscribe { duringTime ->
                     hideProgress()
-                    kotlinGson.text.text = (System.currentTimeMillis() - startMillis).toString()
+                    kotlinGson.text.text = duringTime.toString()
                 }
         createButtonClickObservable(kotlinJackson.button)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { showProgress() }
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithJacksonKotlin(MainActivity::class.java, KSearchImageResult::class.java,
-                            bigFileName)
-                    startMillis
+                    fromJsonWithJacksonKotlin(bigJson, KSearchImageResult::class.java)
+                    System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { startMillis ->
+                .subscribe { duringTime ->
                     hideProgress()
-                    kotlinJackson.text.text = (System.currentTimeMillis() - startMillis).toString()
+                    kotlinJackson.text.text = duringTime.toString()
                 }
 
         //small
         createButtonClickObservable(smallGson.button)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { showProgress() }
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithGson(MainActivity::class.java, KSearchImageResult::class.java,
-                            smallFileName)
-                    startMillis
+                    fromJsonWithGson(smallJson, KSearchImageResult::class.java)
+                    System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { startMillis ->
+                .subscribe { duringTime ->
                     hideProgress()
-                    smallGson.text.text = (System.currentTimeMillis() - startMillis).toString()
+                    smallGson.text.text = duringTime.toString()
                 }
         createButtonClickObservable(smallJackson.button)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { showProgress() }
-                .observeOn(Schedulers.io())
+                .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithJacksonKotlin(MainActivity::class.java, KSearchImageResult::class.java,
-                            smallFileName)
-                    startMillis
+                    fromJsonWithJacksonKotlin(smallJson, KSearchImageResult::class.java)
+                    System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { startMillis ->
+                .subscribe { duringTime ->
                     hideProgress()
-                    smallJackson.text.text = (System.currentTimeMillis() - startMillis).toString()
+                    smallJackson.text.text = duringTime.toString()
                 }
     }
 
@@ -153,23 +157,19 @@ class MainActivity : AppCompatActivity() {
         progress.visibility = View.GONE
     }
 
-    private val gson: Gson = Gson()
-    private val jackson: ObjectMapper = ObjectMapper()
-    private val jacksonWithKotlin = ObjectMapper().registerModule(KotlinModule())
-
     @Throws(IOException::class)
-    private fun <T> fromJsonWithGson(testClass: Class<*>, classOfT: Class<T>, subPath: String): T {
-        return gson.fromJson(getStringFromResource(testClass, subPath), classOfT)
+    private fun <T> fromJsonWithGson(json: String?, classOfT: Class<T>): T {
+        return gson.fromJson(json, classOfT)
     }
 
     @Throws(IOException::class)
-    private fun <T> fromJsonWithJackson(testClass: Class<*>, classOfT: Class<T>, subPath: String): T {
-        return jackson.readValue(getStringFromResource(testClass, subPath), classOfT)
+    private fun <T> fromJsonWithJackson(json: String?, classOfT: Class<T>): T {
+        return jackson.readValue(json, classOfT)
     }
 
     @Throws(IOException::class)
-    private fun <T> fromJsonWithJacksonKotlin(testClass: Class<*>, classOfT: Class<T>, subPath: String): T {
-        return jacksonWithKotlin.readValue(getStringFromResource(testClass, subPath), classOfT)
+    private fun <T> fromJsonWithJacksonKotlin(json: String?, classOfT: Class<T>): T {
+        return jacksonWithKotlin.readValue(json, classOfT)
     }
 
     private fun openResource(testClass: Class<*>, subPath: String): InputStream {
@@ -186,10 +186,6 @@ class MainActivity : AppCompatActivity() {
                     b.append(line)
                     line = it.readLine()
                 }
-                //String line;
-                //while ((line = r.readLine()) != null) {
-                //    b.append(line);
-                //}
                 return b.toString()
             }
         }
