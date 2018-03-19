@@ -144,7 +144,7 @@ class MainActivity : AppCompatActivity() {
     private fun createButtonClickObservable(button: View): Observable<Long> {
         return Observable.create { emitter ->
             button.setOnClickListener {
-                emitter.onNext(System.currentTimeMillis())
+                if(!isProgress()) emitter.onNext(System.currentTimeMillis())
             }
         }
     }
@@ -155,6 +155,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun hideProgress() {
         progress.visibility = View.GONE
+    }
+
+    private fun isProgress(): Boolean {
+        return progress != null && progress.visibility == View.VISIBLE
     }
 
     @Throws(IOException::class)
