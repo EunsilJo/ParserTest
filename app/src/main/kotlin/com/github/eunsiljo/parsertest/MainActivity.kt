@@ -2,14 +2,18 @@ package com.github.eunsiljo.parsertest
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.github.eunsiljo.parsertest.model.JSearchImageResult
 import com.github.eunsiljo.parsertest.model.KSearchImageResult
 import com.google.gson.Gson
+import com.jakewharton.rxbinding2.view.RxView
 import io.reactivex.Observable
+import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_layout.view.*
@@ -20,6 +24,7 @@ import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
 
+    private val count: Int = 1
     private val bigFileName: String = "big.json"
     private val smallFileName: String = "small.json"
 
@@ -57,12 +62,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun initObservable(){
         //java
-        createButtonClickObservable(javaGson.button)
+        RxView.clicks(javaGson.button)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { showProgress() }
+                .map {
+                    showProgress()
+                    System.currentTimeMillis()
+                }
                 .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithGson(bigJson, JSearchImageResult::class.java)
+                    for(i in 1..count) {
+                        fromJsonWithGson(bigJson, JSearchImageResult::class.java)
+                    }
                     System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -70,12 +80,17 @@ class MainActivity : AppCompatActivity() {
                     hideProgress()
                     javaGson.text.text = duringTime.toString()
                 }
-        createButtonClickObservable(javaJackson.button)
+        RxView.clicks(javaJackson.button)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { showProgress() }
+                .map {
+                    showProgress()
+                    System.currentTimeMillis()
+                }
                 .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithJackson(bigJson, JSearchImageResult::class.java)
+                    for(i in 1..count) {
+                        fromJsonWithJackson(bigJson, JSearchImageResult::class.java)
+                    }
                     System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -85,12 +100,17 @@ class MainActivity : AppCompatActivity() {
                 }
 
         //kotlin
-        createButtonClickObservable(kotlinGson.button)
+        RxView.clicks(kotlinGson.button)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { showProgress() }
+                .map {
+                    showProgress()
+                    System.currentTimeMillis()
+                }
                 .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithGson(bigJson, KSearchImageResult::class.java)
+                    for(i in 1..count) {
+                        fromJsonWithGson(bigJson, KSearchImageResult::class.java)
+                    }
                     System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -98,12 +118,17 @@ class MainActivity : AppCompatActivity() {
                     hideProgress()
                     kotlinGson.text.text = duringTime.toString()
                 }
-        createButtonClickObservable(kotlinJackson.button)
+        RxView.clicks(kotlinJackson.button)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { showProgress() }
+                .map {
+                    showProgress()
+                    System.currentTimeMillis()
+                }
                 .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithJacksonKotlin(bigJson, KSearchImageResult::class.java)
+                    for(i in 1..count) {
+                        fromJsonWithJacksonKotlin(bigJson, KSearchImageResult::class.java)
+                    }
                     System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -113,12 +138,17 @@ class MainActivity : AppCompatActivity() {
                 }
 
         //small
-        createButtonClickObservable(smallGson.button)
+        RxView.clicks(smallGson.button)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { showProgress() }
+                .map {
+                    showProgress()
+                    System.currentTimeMillis()
+                }
                 .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithGson(smallJson, KSearchImageResult::class.java)
+                    for(i in 1..count) {
+                        fromJsonWithGson(smallJson, KSearchImageResult::class.java)
+                    }
                     System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -126,12 +156,17 @@ class MainActivity : AppCompatActivity() {
                     hideProgress()
                     smallGson.text.text = duringTime.toString()
                 }
-        createButtonClickObservable(smallJackson.button)
+        RxView.clicks(smallJackson.button)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { showProgress() }
+                .map {
+                    showProgress()
+                    System.currentTimeMillis()
+                }
                 .observeOn(Schedulers.computation())
                 .map { startMillis ->
-                    fromJsonWithJacksonKotlin(smallJson, KSearchImageResult::class.java)
+                    for(i in 1..count) {
+                        fromJsonWithJacksonKotlin(smallJson, KSearchImageResult::class.java)
+                    }
                     System.currentTimeMillis() - startMillis
                 }
                 .observeOn(AndroidSchedulers.mainThread())
@@ -139,14 +174,6 @@ class MainActivity : AppCompatActivity() {
                     hideProgress()
                     smallJackson.text.text = duringTime.toString()
                 }
-    }
-
-    private fun createButtonClickObservable(button: View): Observable<Long> {
-        return Observable.create { emitter ->
-            button.setOnClickListener {
-                if(!isProgress()) emitter.onNext(System.currentTimeMillis())
-            }
-        }
     }
 
     private fun showProgress() {
