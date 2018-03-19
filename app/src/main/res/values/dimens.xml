@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="common_margin">15dp</dimen>
+    <dimen name="common_margin">30dp</dimen>
+    <dimen name="common_margin_medium">16dp</dimen>
     <dimen name="common_margin_small">10dp</dimen>
-    <dimen name="button_width">120dp</dimen>
+    <dimen name="button_width">135dp</dimen>
 </resources>
