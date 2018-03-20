@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'com.getkeepsafe.dexcount'
+
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -23,6 +25,15 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2'
     }
 }
 

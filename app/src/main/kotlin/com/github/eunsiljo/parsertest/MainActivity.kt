@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initLayout(){
+        txtCount.text = "Count: " + count
+
         //java
         javaGson.button.text = getString(R.string.gson)
         javaJackson.button.text = getString(R.string.jackson)
